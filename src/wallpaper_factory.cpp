@@ -1,17 +1,10 @@
 #include "wallpaper_factory.h"
 #include "position.h"
+#include "common.h"
 
 #include <Magick++.h>
 #include <string>
 #include <list>
-
-Magick::ColorRGB to_magick_color(color color) {
-    return Magick::ColorRGB( 
-        color.get_red()   / 255.0,
-        color.get_green() / 255.0,
-        color.get_blue()  / 255.0
-    );
-}
 
 Magick::Image* wallpaper_factory::get_base_wallpaper(
     int screenw,

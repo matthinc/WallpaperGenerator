@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
     Magick::Image* image = make_wallpaper(arg_data);
     if (image != nullptr) {
         image->write(arg_data.outfile);
+        delete image;
     }
 
     return 0;
