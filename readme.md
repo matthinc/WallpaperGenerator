@@ -1,4 +1,9 @@
+# WallpaperGenerator
+
+A lightweight CLI tool to generate wallpapers in a scriptable way.
+
 [![Build Status](https://travis-ci.org/matthinc/WallpaperGenerator.svg?branch=master)](https://travis-ci.org/matthinc/WallpaperGenerator)
+![GitHub issues](https://img.shields.io/github/issues/matthinc/WallpaperGenerator)
 
 ## Types
 
