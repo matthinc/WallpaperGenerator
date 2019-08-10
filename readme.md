@@ -30,3 +30,13 @@ A lightweight CLI tool to generate wallpapers in a scriptable way.
 ### Diagonal Split
     wallpaper -t diagonal_split -c "#bfd3f2;#8dabd9" -l arch.png
 ![...](examples/diagonal.png)
+
+### Triangle
+    wallpaper -t triangle -c "#bfd3f2;#8dabd9" -l arch.png
+![...](examples/triangle.png)
+
+### Diamonds
+    wallpaper -t diamonds -c "#bfd3f2;#8dabd9" -l arch.png
+![...](examples/diamonds.png)
+
+
