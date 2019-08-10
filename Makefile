@@ -3,15 +3,17 @@ INCLUDE_DIR = ./include
 SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(SOURCES:src/%.cpp=build/%.o)
 
+CXXFLAGS = -Wall -pedantic -Wextra -Wconversion
+
 EXEC = ./build/wallpaper
 
 default: wallpaper
 
 wallpaper: $(OBJECTS)
-	g++ $(OBJECTS) -o $(EXEC) `Magick++-config --ldflags --libs`
+	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC) `Magick++-config --ldflags --libs`
 
 build/%.o: src/%.cpp
-	g++ -c $< -o $@ `Magick++-config --cppflags --libs` -I$(INCLUDE_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@ `Magick++-config --cppflags --libs` -I$(INCLUDE_DIR)
 
 clean:
 	-rm $(OBJECTS)
