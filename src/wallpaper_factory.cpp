@@ -100,6 +100,38 @@ Magick::Image* make_diagonal_split(int screenw, int screenh, color_list& colors)
     return image;
 }
 
+Magick::Image* make_triangle(int screenw, int screenh, color_list& colors) {
+    auto size = Magick::Geometry(screenw, screenh);
+    Magick::Image* image = new Magick::Image(size, to_magick_color(colors.at(0)));
+    image->strokeWidth(0);
+    image->fillColor(to_magick_color(colors.at(1)));
+    std::list<Magick::Coordinate> coords;
+    coords.push_back(Magick::Coordinate(0, screenh));
+    coords.push_back(Magick::Coordinate(screenw / 2, 0));
+    coords.push_back(Magick::Coordinate(screenw, screenh));
+    image->draw(Magick::DrawablePolygon(coords));
+    return image;
+}
+
+Magick::Image* make_diamonds(int screenw, int screenh, color_list& colors) {
+    const int diamond_size = 100;
+    auto size = Magick::Geometry(screenw, screenh);
+    Magick::Image* image = new Magick::Image(size, to_magick_color(colors.at(0)));
+    image->strokeWidth(0);
+    image->fillColor(to_magick_color(colors.at(1)));
+    for (int x = 0; x < screenw; x+= diamond_size) {
+        for (int y = 0; y < screenh; y+= diamond_size) {
+            std::list<Magick::Coordinate> coords;
+            coords.push_back(Magick::Coordinate(x + (diamond_size / 2), y));
+            coords.push_back(Magick::Coordinate(x + diamond_size, y + (diamond_size / 2)));
+            coords.push_back(Magick::Coordinate(x + (diamond_size / 2), y + diamond_size));
+            coords.push_back(Magick::Coordinate(x, y + (diamond_size / 2)));
+            image->draw(Magick::DrawablePolygon(coords));
+        }
+    }
+    return image;
+}
+
 Magick::Image* wallpaper_factory::get_base_wallpaper(
     int screenw,
     int screenh,
@@ -123,6 +155,12 @@ Magick::Image* wallpaper_factory::get_base_wallpaper(
     }
     if (type == "diagonal_split") {
         return make_diagonal_split(screenw, screenh, colors);
+    }
+    if (type == "triangle") {
+        return make_triangle(screenw, screenh, colors);
+    }
+    if (type == "diamonds") {
+        return make_diamonds(screenw, screenh, colors);
     }
     return nullptr;
 }
