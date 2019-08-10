@@ -5,6 +5,28 @@ A lightweight CLI tool to generate wallpapers in a scriptable way.
 [![Build Status](https://travis-ci.org/matthinc/WallpaperGenerator.svg?branch=master)](https://travis-ci.org/matthinc/WallpaperGenerator)
 ![GitHub issues](https://img.shields.io/github/issues/matthinc/WallpaperGenerator)
 
+## Arguments
+
+```
+-t, --type          Wallpaper background type
+-o, --out           Output filename
+
+-w, --width
+-h, --height        Size (Default 1920x1080)
+
+-c, --bgcolor       List of colors
+                    Format "#000000;#FF00FF;..."
+                    Default "#000000"
+
+-l, --logo          Logo path
+-s, --logo_scale    Logo scaling in % (0-100, default 100)
+-p, --logo_position Logo Position
+                    (center, bottom_right, bottom_left,
+                    top_right, top_left)
+                    Default: center
+```
+
+
 ## Types
 
 ### Solid
