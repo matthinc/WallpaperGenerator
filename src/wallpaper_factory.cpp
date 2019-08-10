@@ -6,133 +6,125 @@
 #include <string>
 #include <list>
 
+Magick::Image* make_solid(int screenw, int screenh, color_list& colors) {
+    return new Magick::Image(
+        Magick::Geometry(screenw, screenh),
+        to_magick_color(colors.at(0))
+    );
+}
+
+Magick::Image* make_radial_gradient(int screenw, int screenh, color_list& colors) {
+    std::string gradient{"radial-gradient:rgb("};
+    gradient.append(colors.at(0).to_rgb_string());
+    gradient.append(")-rgb(");
+    gradient.append(colors.at(1).to_rgb_string());
+    gradient.append(")");
+
+    Magick::Image* image = new Magick::Image();
+    image->size(Magick::Geometry(screenw, screenh));
+    image->read(gradient);
+    return image;
+}
+
+Magick::Image* make_linear_gradient(int screenw, int screenh, color_list& colors) {
+    std::string gradient{"radial-gradient:rgb("};
+    gradient.append(colors.at(0).to_rgb_string());
+    gradient.append(")-rgb(");
+    gradient.append(colors.at(1).to_rgb_string());
+    gradient.append(")");
+
+    Magick::Image* image = new Magick::Image();
+    image->size(Magick::Geometry(screenw, screenh));
+    image->read(gradient);
+    return image;
+}
+
+Magick::Image* make_vertical_split(int screenw, int screenh, color_list& colors) {
+    Magick::Image* image = new Magick::Image();
+    image->size(Magick::Geometry(screenw, screenh));
+    image->strokeWidth(0);
+    int number_of_colors = colors.size();
+    for (int i = 0; i < number_of_colors; i++) {
+        Magick::ColorRGB fill_color = to_magick_color(colors.at(i));
+        image->fillColor(fill_color);
+        image->draw(Magick::DrawableRectangle(
+            0,
+            (screenh / number_of_colors) * i,
+            screenw,
+            (screenh / number_of_colors) * (i + 1)
+        ));
+    }
+    return image;
+}
+
+Magick::Image* make_horizontal_split(int screenw, int screenh, color_list& colors) {
+    Magick::Image* image = new Magick::Image();
+    image->size(Magick::Geometry(screenw, screenh));
+    image->strokeWidth(0);
+    int number_of_colors = colors.size();
+    for (int i = 0; i < number_of_colors; i++) {
+        Magick::ColorRGB fill_color = to_magick_color(colors.at(i));
+        image->fillColor(fill_color);
+        image->draw(Magick::DrawableRectangle(
+            0,
+            (screenh / number_of_colors) * i,
+            screenw,
+            (screenh / number_of_colors) * (i + 1)
+        ));
+    }
+    return image;
+}
+
+Magick::Image* make_diagonal_split(int screenw, int screenh, color_list& colors) {
+    Magick::Image* image = new Magick::Image();
+    image->size(Magick::Geometry(screenw, screenh));
+    image->strokeWidth(0);
+    image->fillColor(to_magick_color(colors.at(0)));
+    {
+        std::list<Magick::Coordinate> coords;
+        coords.push_back(Magick::Coordinate(0, 0));
+        coords.push_back(Magick::Coordinate(screenw, screenh));
+        coords.push_back(Magick::Coordinate(0, screenh));
+
+        image->draw(Magick::DrawablePolygon(coords));
+    }
+    image->fillColor(to_magick_color(colors.at(1)));
+    {
+        std::list<Magick::Coordinate> coords;
+        coords.push_back(Magick::Coordinate(0, 0));
+        coords.push_back(Magick::Coordinate(screenw, 0));
+        coords.push_back(Magick::Coordinate(screenw, screenh));
+
+        image->draw(Magick::DrawablePolygon(coords));
+    }
+    return image;
+}
+
 Magick::Image* wallpaper_factory::get_base_wallpaper(
     int screenw,
     int screenh,
     std::string& type,
     color_list& colors
 ) {
-    /*
-        SOLID
-        colors: 1
-    */
     if (type == "solid") {
-        return new Magick::Image(
-            Magick::Geometry(screenw, screenh),
-            to_magick_color(colors.at(0))
-        );
+        return make_solid(screenw, screenh, colors);
     }
-    /*
-        RADIAL GRADIENT
-        colors: 2
-    */
     if (type == "radial_gradient") {
-        std::string gradient{"radial-gradient:rgb("};
-        gradient.append(colors.at(0).to_rgb_string());
-        gradient.append(")-rgb(");
-        gradient.append(colors.at(1).to_rgb_string());
-        gradient.append(")");
-
-        Magick::Image* image = new Magick::Image();
-        image->size(Magick::Geometry(screenw, screenh));
-        image->read(gradient);
-        return image;
+        return make_radial_gradient(screenw, screenh, colors);
     }
-    /*
-        LINEAR GRADIENT
-        colors: 2
-    */
     if (type == "linear_gradient") {
-        std::string gradient{"gradient:rgb("};
-        gradient.append(colors.at(0).to_rgb_string());
-        gradient.append(")-rgb(");
-        gradient.append(colors.at(1).to_rgb_string());
-        gradient.append(")");
-
-        Magick::Image* image = new Magick::Image();
-        image->size(Magick::Geometry(screenw, screenh));
-        image->read(gradient);
-        return image;
+        return make_linear_gradient(screenw, screenh, colors);
     }
-    /*
-        VERTICAL SPLIT
-        colors: 1-n
-    */
     if (type == "vertical_split") {
-        Magick::Image* image = new Magick::Image();
-        image->size(Magick::Geometry(screenw, screenh));
-        image->strokeWidth(0);
-
-        int number_of_colors = colors.size();
-
-        for (int i = 0; i < number_of_colors; i++) {
-            Magick::ColorRGB fill_color = to_magick_color(colors.at(i));
-            image->fillColor(fill_color);
-            image->draw(Magick::DrawableRectangle(
-                0,
-                (screenh / number_of_colors) * i,
-                screenw,
-                (screenh / number_of_colors) * (i + 1)
-            ));
-        }
-
-        return image;
+        return make_vertical_split(screenw, screenh, colors);
     }
-    /*
-        HORIZONTAL SPLIT
-        colors: 1-n
-    */
     if (type == "horizontal_split") {
-        Magick::Image* image = new Magick::Image();
-        image->size(Magick::Geometry(screenw, screenh));
-        image->strokeWidth(0);
-
-        int number_of_colors = colors.size();
-
-        for (int i = 0; i < number_of_colors; i++) {
-            Magick::ColorRGB fill_color = to_magick_color(colors.at(i));
-            image->fillColor(fill_color);
-            image->draw(Magick::DrawableRectangle(
-                (screenw / number_of_colors) * i,
-                0,
-                (screenw / number_of_colors) * (i + 1),
-                screenh
-            ));
-        }
-
-        return image;
+        return make_horizontal_split(screenw, screenh, colors);
     }
-    /*
-        DIAGONAL SPLIT
-        colors: 2
-    */
     if (type == "diagonal_split") {
-        Magick::Image* image = new Magick::Image();
-        image->size(Magick::Geometry(screenw, screenh));
-        image->strokeWidth(0);
-
-        image->fillColor(to_magick_color(colors.at(0)));
-        {
-            std::list<Magick::Coordinate> coords;
-            coords.push_back(Magick::Coordinate(0, 0));
-            coords.push_back(Magick::Coordinate(screenw, screenh));
-            coords.push_back(Magick::Coordinate(0, screenh));
-
-            image->draw(Magick::DrawablePolygon(coords));
-        }
-
-        image->fillColor(to_magick_color(colors.at(1)));
-        {
-            std::list<Magick::Coordinate> coords;
-            coords.push_back(Magick::Coordinate(0, 0));
-            coords.push_back(Magick::Coordinate(screenw, 0));
-            coords.push_back(Magick::Coordinate(screenw, screenh));
-
-            image->draw(Magick::DrawablePolygon(coords));
-        }
-
-        return image;
+        return make_diagonal_split(screenw, screenh, colors);
     }
+    return nullptr;
 }
 
 void wallpaper_factory::with_logo(
@@ -147,12 +139,10 @@ void wallpaper_factory::with_logo(
     logo_image.read(logo);
 
     if (logo_scale != 100) {
-        logo_image.resize(
-            Magick::Geometry(
-                (logo_image.columns() * logo_scale) / 100,
-                (logo_image.rows() * logo_scale) / 100
-            )
-        );
+        int width = (logo_image.columns() * logo_scale) / 100;
+        int height = (logo_image.rows() * logo_scale) / 100;
+        auto geometry = Magick::Geometry(width, height);
+        logo_image.resize(geometry);
     }
 
     position::point pos = position::by_string(
