@@ -132,6 +132,28 @@ Magick::Image* make_diamonds(int screenw, int screenh, color_list& colors) {
     return image;
 }
 
+Magick::Image* make_stripes(int screenw, int screenh, color_list& colors) {
+    const int stripe_width = 100;
+    auto size = Magick::Geometry(screenw, screenh);
+    Magick::Image* image = new Magick::Image(size, to_magick_color(colors.at(0)));
+    image->size(Magick::Geometry(screenw, screenh));
+    image->strokeWidth(0);
+    int number_of_colors = colors.size() - 1;
+    int start_index_bottom = (screenw / 2) - number_of_colors * stripe_width;
+    int start_index_top = screenw / 2;
+    for (int i = 0; i < number_of_colors; i++) {
+        Magick::ColorRGB fill_color = to_magick_color(colors.at(i + 1));
+        image->fillColor(fill_color);
+        std::list<Magick::Coordinate> coords;
+        coords.push_back(Magick::Coordinate(start_index_top + i * stripe_width, 0));
+        coords.push_back(Magick::Coordinate(start_index_top + (i + 1) * stripe_width, 0));
+        coords.push_back(Magick::Coordinate(start_index_bottom + (i + 1) * stripe_width, screenh));
+        coords.push_back(Magick::Coordinate(start_index_bottom + i * stripe_width, screenh));
+        image->draw(Magick::DrawablePolygon(coords));
+    }
+    return image;
+}
+
 Magick::Image* wallpaper_factory::get_base_wallpaper(
     int screenw,
     int screenh,
@@ -161,6 +183,9 @@ Magick::Image* wallpaper_factory::get_base_wallpaper(
     }
     if (type == "diamonds") {
         return make_diamonds(screenw, screenh, colors);
+    }
+    if (type == "stripes") {
+        return make_stripes(screenw, screenh, colors);
     }
     return nullptr;
 }

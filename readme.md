@@ -61,4 +61,9 @@ A lightweight CLI tool to generate wallpapers in a scriptable way.
     wallpaper -t diamonds -c "#bfd3f2;#8dabd9" -l arch.png
 ![...](examples/diamonds.png)
 
+### Stripes
+    wallpaper -t stripes -c "#bfd3f2;#8bb5f7;#71a4f5;#5796fa;#428afc" -l arch.png -p bottom_right
+![...](examples/stripes.png)
+
+
 
