@@ -53,11 +53,11 @@ int main(int argc, char** argv) {
 
     auto arg_data = arguments::parse_args(argc, argv);
 
-    if(!validate_filepath(*arg_data.logo)) {
+    if(arg_data.logo != nullptr && !validate_filepath(*arg_data.logo)) {
       std::cerr << "Invalid file '" << *arg_data.logo << "'" << std::endl;
       return 1;
     }
-    
+
     // Create Wallpaper
     Magick::Image* image = make_wallpaper(arg_data);
     if (image != nullptr) {
