@@ -1,5 +1,8 @@
-#include <string>
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
+#include <iostream>
+#include <string>
 
 #include "color.h"
 
@@ -37,6 +40,83 @@ color::color(std::string in) {
         c_g |= c_g << 4;
         c_b  = hex_char_int(in[3]);
         c_b |= c_b << 4;
+    }
+    if (in.size() == 10 && in[0] == '+') {
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
+        // https://www.programmingalgorithms.com/algorithm/hsv-to-rgb/cpp/
+        double H = std::stof(in.substr(1, 3)); // [0,360)
+        double S = std::stof(in.substr(4, 3)); // [0,1]
+        double V = std::stof(in.substr(7, 3)); // [0,1]
+        double h = std::max(static_cast<double>(0.0), std::min(static_cast<double>(360.0), H));
+        double s = std::max(static_cast<double>(0.0), std::min(static_cast<double>(100.0), S));
+        double v = std::max(static_cast<double>(0.0), std::min(static_cast<double>(100.0), V));
+        s = s / 100;
+        v = v / 100;
+
+        double r = 0, g = 0, b = 0;
+
+        if (s == 0) {
+            r = v;
+            g = v;
+            b = v;
+        }
+        else {
+            int i;
+            double f, p, q, t;
+
+            if (h == 360)
+                h = 0;
+            else
+                h = h / 60;
+
+            i = (int)trunc(h);
+            f = h - i;
+
+            p = v * (1.0 - s);
+            q = v * (1.0 - (s * f));
+            t = v * (1.0 - (s * (1.0 - f)));
+
+            switch (i) {
+            case 0:
+                r = v;
+                g = t;
+                b = p;
+                break;
+
+            case 1:
+                r = q;
+                g = v;
+                b = p;
+                break;
+
+            case 2:
+                r = p;
+                g = v;
+                b = t;
+                break;
+
+            case 3:
+                r = p;
+                g = q;
+                b = v;
+                break;
+
+            case 4:
+                r = t;
+                g = p;
+                b = v;
+                break;
+
+            default:
+                r = v;
+                g = p;
+                b = q;
+                break;
+            }
+        }
+        c_r = std::round(255 * r);
+        c_g = std::round(255 * g);
+        c_b = std::round(255 * b);
     }
 }
 
